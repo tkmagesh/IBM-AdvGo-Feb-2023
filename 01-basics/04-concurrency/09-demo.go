@@ -13,8 +13,8 @@ func main() {
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 	go add(wg, 100, 200, ch)
-	wg.Wait()
 	result := <-ch
+	wg.Wait()
 	fmt.Println(result)
 }
 

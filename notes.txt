@@ -37,3 +37,9 @@ Recap:
 
     Structs
         Are values
+
+
+Concurrency
+    Channel Behavior
+        A RECEIVE operation is ALWAYS a blocking operation
+        A SEND operation is blocked until a RECEIVE operation is initiated (conditions apply)
