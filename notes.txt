@@ -7,3 +7,30 @@ Schedule:
     Tea Break   : 3:30 PM (20 mins)
     Wind up     : 5:30 PM
 
+Methodology:
+    No powerpoint
+    ONLY code
+
+Repo:
+    https://github.com/tkmagesh/ibm-advgo-feb-2023
+
+Software Requirements
+    1. Go Tools (https://go.dev/dl)
+    2. Visual Studio Code (https://code.visualstudio.com)
+    3. Go Extenstion for VS Code (https://marketplace.visualstudio.com/items?itemName=golang.Go)
+
+Prerequisites:
+    Go language constructs
+        variables, constants, data types, if else, switch case, for, functions, errors, panic & recovery, pointers
+    Higher Order Functions
+    Interfaces
+    Structs, Methods & Composition
+    Modules & Packages
+    Concurrency
+
+
+Recap:
+    Higher Order Functions (Functions are first class citizens)
+        1. Assign functions as values to variables
+        2. Pass functions as arguments
+        3. Return functions as return values
