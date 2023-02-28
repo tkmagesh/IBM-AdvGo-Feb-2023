@@ -44,11 +44,12 @@ func main() {
 	*/
 
 	/* Approach:3 */
+
 	w := worker.New(5)
 	for i := 1; i <= 20; i++ {
 		w.Add(MyWork{Id: i})
 	}
 	fmt.Println("All tasks are assigned")
-	fmt.Scanln()
 	w.Shutdown() // wait for all the assigned tasks to complete and DO NOT accept any more tasks
+	fmt.Println("Done")
 }
