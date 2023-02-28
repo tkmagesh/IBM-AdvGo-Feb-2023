@@ -52,3 +52,42 @@ Context
         context.WithValue()
         context.WithTimeout()
         context.WithDeadline()
+
+GRPC
+    Protocol Buffers
+        Schema of the payload is shared in advance between the client and server
+        ONLY data is exchanged
+        Small and efficient payloads
+        Binary serialization
+
+    HTTP/2
+        Communication Patterns
+            - Request Response
+            - Server Streaming 
+            - Client Streaming
+            - Bidirectional Streaming
+
+    1. Contracts (Protocol Buffers)
+        Service Contract
+        Operation Contracts
+        Message Contracts (data)
+    2. Generate the Proxy & Stub
+    3. Implement the service
+    4. Host the service
+    5. Client call the service using the proxy
+
+    Tools Installation
+        1. Protocol Buffers Compiler (protoc tool)
+            Windows:
+                Download the file, extract and keep in a folder (PATH) accessble through the command line
+                https://github.com/protocolbuffers/protobuf/releases/download/v21.12/protoc-21.12-win64.zip
+            Mac:
+                brew install protobuf
+
+            Verification:
+                protoc --version
+
+        2. Go plugins
+            go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
+            go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
+    
