@@ -87,6 +87,7 @@ func main() {
 	fmt.Println("Batch - 1 completed.  Press ENTER to continue...")
 
 	fmt.Scanln()
+	fmt.Println("Batch - 2 Starts (To verify if the resources are returned from the pool).")
 	wg.Add(10)
 	for c := 21; c <= 30; c++ {
 		go func(client int) {
