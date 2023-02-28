@@ -1,6 +1,9 @@
 package worker
 
-import "sync"
+import (
+	"fmt"
+	"sync"
+)
 
 type Work interface {
 	Task()
@@ -28,6 +31,7 @@ func New(workerCount int) *Worker {
 	for i := 1; i <= workerCount; i++ {
 		worker.wg.Add(1)
 		go func(id int) {
+			fmt.Printf("Worker %d started\n", id)
 			defer worker.wg.Done()
 			for work := range worker.workQueue {
 				work.Task()
