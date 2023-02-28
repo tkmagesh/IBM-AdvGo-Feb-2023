@@ -51,6 +51,7 @@ func (p *Pool) Close() {
 	if p.closed {
 		return
 	}
+	p.closed = true
 	close(p.resources)
 	for resource := range p.resources {
 		resource.Close()
