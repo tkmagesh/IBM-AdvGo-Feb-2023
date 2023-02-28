@@ -29,10 +29,10 @@ func (dbConnection DBConnection) Close() error {
 // resource factory
 var idCounter int
 
-func DBConnectionFactory() io.Closer {
+func DBConnectionFactory() (io.Closer, error) {
 	idCounter++
 	dbConnection := DBConnection{Id: idCounter}
-	return dbConnection
+	return dbConnection, nil
 }
 
 func main() {
