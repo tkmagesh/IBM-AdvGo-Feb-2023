@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -29,7 +30,10 @@ func init() {
 func logger(handle httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 		log.Printf("%s - %s\n", r.Method, r.URL)
-		handle(w, r, params)
+		ctx := context.WithValue(r.Context(), "key-1", "val-1")
+		handle(w, r.WithContext(ctx), params)
+
+		// handle(w, r, params)
 	}
 }
 
@@ -45,6 +49,7 @@ func profile(handle httprouter.Handle) httprouter.Handle {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	fmt.Println("Data from context : ", r.Context().Value("key-1"))
 	w.Write([]byte("Hi from go web server! [using httprouter]"))
 }
 
@@ -78,7 +83,7 @@ func postProductsHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Pa
 
 func main() {
 	router := httprouter.New()
-	router.GET("/", indexHandler)
+	router.GET("/", profile(logger(indexHandler)))
 
 	router.GET("/products", profile(logger(getProductsHandler)))
 	router.GET("/products/:id", profile(logger(getProductHandler)))
