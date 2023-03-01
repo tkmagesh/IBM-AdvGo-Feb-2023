@@ -28,10 +28,10 @@ func customersHandler(res http.ResponseWriter, req *http.Request) {
 
 /* Server implementation */
 type AppServer struct {
-	handlers map[string]func(http.ResponseWriter, *http.Request)
+	handlers map[string]http.HandlerFunc
 }
 
-func (appServer *AppServer) Register(pattern string, handler func(http.ResponseWriter, *http.Request)) {
+func (appServer *AppServer) Register(pattern string, handler http.HandlerFunc) {
 	appServer.handlers[pattern] = handler
 }
 
@@ -48,7 +48,7 @@ func (appServer *AppServer) ServeHTTP(res http.ResponseWriter, req *http.Request
 
 func NewAppServer() *AppServer {
 	return &AppServer{
-		handlers: make(map[string]func(http.ResponseWriter, *http.Request)),
+		handlers: make(map[string]http.HandlerFunc),
 	}
 }
 
