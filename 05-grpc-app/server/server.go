@@ -92,6 +92,33 @@ func (asi *AppServiceImpl) CalculateAverage(serverStream proto.AppService_Calcul
 	}
 }
 
+/* Bidirectional Streaming */
+func (asi *AppServiceImpl) Greet(serverStream proto.AppService_GreetServer) error {
+	for {
+		req, err := serverStream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalln(err)
+		}
+		personName := *req.GetPerson()
+		firstName := personName.GetFirstName()
+		lastName := personName.GetLastName()
+		fmt.Printf("Received req : %s %s\n", firstName, lastName)
+		greetMsg := fmt.Sprintf("Hi %s %s, Have a nice day", firstName, lastName)
+		fmt.Printf("Sending response : %s\n", greetMsg)
+		time.Sleep(500 * time.Millisecond)
+		res := &proto.GreetResponse{
+			Message: greetMsg,
+		}
+		if err := serverStream.Send(res); err != nil {
+			log.Fatalln(err)
+		}
+	}
+	return nil
+}
+
 func main() {
 	//hosting the service
 	asi := &AppServiceImpl{}
