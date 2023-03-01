@@ -14,11 +14,14 @@ import (
 )
 
 type AppServiceImpl struct {
+	opCount map[string]int
 	proto.UnimplementedAppServiceServer
 }
 
 /* Request & Response */
 func (asi *AppServiceImpl) Add(ctx context.Context, req *proto.AddRequest) (*proto.AddResponse, error) {
+	asi.opCount["Add"]++
+	fmt.Println("Value from context : ", ctx.Value("key-1"))
 	fmt.Println("Wait for 3 seconds")
 	time.Sleep(3 * time.Second)
 	select {
@@ -41,6 +44,7 @@ func (asi *AppServiceImpl) Add(ctx context.Context, req *proto.AddRequest) (*pro
 
 /* Server Streaming */
 func (asi *AppServiceImpl) GeneratePrimes(req *proto.PrimeRequest, serverStream proto.AppService_GeneratePrimesServer) error {
+	asi.opCount["GeneratePrimes"]++
 	start := req.GetStart()
 	end := req.GetEnd()
 	fmt.Printf("Request received for generating prime number from start = %d to end = %d\n", start, end)
@@ -71,6 +75,7 @@ func isPrime(no int32) bool {
 
 /* client streaming */
 func (asi *AppServiceImpl) CalculateAverage(serverStream proto.AppService_CalculateAverageServer) error {
+	asi.opCount["CalculateAverage"]++
 	var sum, count int32
 	for {
 		req, err := serverStream.Recv()
@@ -102,6 +107,7 @@ func (asi *AppServiceImpl) Greet(serverStream proto.AppService_GreetServer) erro
 		if err != nil {
 			log.Fatalln(err)
 		}
+		asi.opCount["Greet"]++
 		personName := *req.GetPerson()
 		firstName := personName.GetFirstName()
 		lastName := personName.GetLastName()
@@ -121,12 +127,33 @@ func (asi *AppServiceImpl) Greet(serverStream proto.AppService_GreetServer) erro
 
 func main() {
 	//hosting the service
-	asi := &AppServiceImpl{}
+	asi := &AppServiceImpl{
+		opCount: make(map[string]int),
+	}
+	done := make(chan struct{})
 	listener, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatalln(err)
 	}
 	grpcServer := grpc.NewServer()
 	proto.RegisterAppServiceServer(grpcServer, asi)
-	grpcServer.Serve(listener)
+
+	go func() {
+		fmt.Println("Hit ENTER to print stats.... EXIT to shutdown..")
+		var input string
+		for {
+			fmt.Scanln(&input)
+			if input == "EXIT" {
+				break
+			}
+			fmt.Println(asi.opCount)
+		}
+		close(done)
+		grpcServer.Stop()
+	}()
+	go func() {
+		grpcServer.Serve(listener)
+	}()
+	<-done
+	fmt.Println("Server shutdown...")
 }

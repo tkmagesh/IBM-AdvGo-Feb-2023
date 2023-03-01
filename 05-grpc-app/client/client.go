@@ -23,10 +23,9 @@ func main() {
 	client := proto.NewAppServiceClient(clientConn)
 	ctx := context.Background()
 
+	fmt.Println("Request & Response")
+	doRequestResponse(ctx, client)
 	/*
-		fmt.Println("Request & Response")
-		doRequestResponse(ctx, client)
-
 		fmt.Println("Server Streaming")
 		doServerStreaming(ctx, client)
 
@@ -34,12 +33,15 @@ func main() {
 		doClientStreaming(ctx, client)
 	*/
 
-	fmt.Println("Bidirectional Streaming")
-	doBidirectionalStreaming(ctx, client)
+	/*
+		fmt.Println("Bidirectional Streaming")
+		doBidirectionalStreaming(ctx, client)
+	*/
 }
 
 func doRequestResponse(ctx context.Context, client proto.AppServiceClient) {
-	timeoutCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	valCtx := context.WithValue(ctx, "key-1", "val-1")
+	timeoutCtx, cancel := context.WithTimeout(valCtx, 5*time.Second)
 	defer cancel()
 	addRequest := &proto.AddRequest{
 		X: 100,
@@ -125,7 +127,8 @@ func doBidirectionalStreaming(ctx context.Context, client proto.AppServiceClient
 			}
 			fmt.Println(res.GetMessage())
 		}
-		done <- struct{}{}
+		// done <- struct{}{}
+		close(done)
 	}()
 	for _, personName := range personNames {
 		fmt.Printf("Sending name : %s %s\n", personName.FirstName, personName.LastName)
