@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"grpc-app/proto"
 	"io"
@@ -15,6 +16,9 @@ import (
 )
 
 func main() {
+	var userChoice int
+	flag.IntVar(&userChoice, "operation", 0, "operation # to execute")
+	flag.Parse()
 	options := grpc.WithTransportCredentials(insecure.NewCredentials())
 	clientConn, err := grpc.Dial("localhost:50051", options)
 	if err != nil {
@@ -23,20 +27,22 @@ func main() {
 	client := proto.NewAppServiceClient(clientConn)
 	ctx := context.Background()
 
-	fmt.Println("Request & Response")
-	doRequestResponse(ctx, client)
-	/*
+	switch userChoice {
+	case 1:
+		fmt.Println("Request & Response")
+		doRequestResponse(ctx, client)
+	case 2:
 		fmt.Println("Server Streaming")
 		doServerStreaming(ctx, client)
-
+	case 3:
 		fmt.Println("Client Streaming")
 		doClientStreaming(ctx, client)
-	*/
-
-	/*
+	case 4:
 		fmt.Println("Bidirectional Streaming")
 		doBidirectionalStreaming(ctx, client)
-	*/
+	default:
+		fmt.Println("Invalid choice")
+	}
 }
 
 func doRequestResponse(ctx context.Context, client proto.AppServiceClient) {
