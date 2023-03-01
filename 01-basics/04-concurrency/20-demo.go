@@ -14,7 +14,9 @@ func main() {
 			time.Sleep(500 * time.Millisecond)
 			ch <- i * 2
 		}
+		fmt.Println("goroutine feeding data completed")
 	}()
+
 	fmt.Scanln()
 }
 
@@ -23,6 +25,7 @@ func f1(ch chan int) {
 		time.Sleep(1 * time.Second)
 		fmt.Println("f1 - data :", data)
 	}
+	fmt.Println("f1 completed")
 }
 
 func f2(ch chan int) {
@@ -30,4 +33,5 @@ func f2(ch chan int) {
 		time.Sleep(2 * time.Second)
 		fmt.Println("f2 - data :", data)
 	}
+	fmt.Println("f2 completed")
 }
