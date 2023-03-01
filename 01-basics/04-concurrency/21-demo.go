@@ -37,6 +37,7 @@ func main() {
 		fmt.Println("Hit ENTER to shutdown....")
 		fmt.Scanln()
 		close(doneCh)
+		// doneCh <- struct{}{}
 	}()
 
 	wg.Wait()
