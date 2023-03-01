@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"sync"
 	"time"
@@ -11,15 +10,13 @@ func main() {
 	ch := make(chan int)
 	wg := &sync.WaitGroup{}
 
-	ctx := context.Background()
-	cancelCtx, cancel := context.WithCancel(ctx)
-	defer cancel()
+	doneCh := make(chan struct{})
 
 	wg.Add(1)
-	go f1(cancelCtx, ch, wg)
+	go f1(doneCh, ch, wg)
 
 	wg.Add(1)
-	go f2(cancelCtx, ch, wg)
+	go f2(doneCh, ch, wg)
 
 	wg.Add(1)
 	go func() {
@@ -27,7 +24,7 @@ func main() {
 	LOOP:
 		for i := 1; ; i++ {
 			select {
-			case <-cancelCtx.Done():
+			case <-doneCh:
 				break LOOP
 			case ch <- i * 2:
 				time.Sleep(500 * time.Millisecond)
@@ -39,19 +36,19 @@ func main() {
 	go func() {
 		fmt.Println("Hit ENTER to shutdown....")
 		fmt.Scanln()
-		cancel()
+		close(doneCh)
 	}()
 
 	wg.Wait()
 	fmt.Println("Done")
 }
 
-func f1(ctx context.Context, ch chan int, wg *sync.WaitGroup) {
+func f1(doneCh chan struct{}, ch chan int, wg *sync.WaitGroup) {
 	defer wg.Done()
 LOOP:
 	for {
 		select {
-		case <-ctx.Done():
+		case <-doneCh:
 			break LOOP
 		case data := <-ch:
 			fmt.Println("f1 - data :", data)
@@ -61,12 +58,12 @@ LOOP:
 	fmt.Println("f1 completed")
 }
 
-func f2(ctx context.Context, ch chan int, wg *sync.WaitGroup) {
+func f2(doneCh chan struct{}, ch chan int, wg *sync.WaitGroup) {
 	defer wg.Done()
 LOOP:
 	for {
 		select {
-		case <-ctx.Done():
+		case <-doneCh:
 			break LOOP
 		case data := <-ch:
 			fmt.Println("f2 - data :", data)
